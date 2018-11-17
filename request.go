@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gofrs/uuid"
 )
 
 const (
@@ -203,6 +205,13 @@ func unmarshalNode(data *Node, model reflect.Value, included *map[string]*Node) 
 			// Handle String case
 			if kind == reflect.String {
 				assign(fieldValue, v)
+				continue
+			}
+
+			// Handle UUID case
+			if kind == reflect.Array {
+				id, _ := uuid.FromString(v.String())
+				assign(fieldValue, reflect.ValueOf(id))
 				continue
 			}
 

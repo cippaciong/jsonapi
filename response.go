@@ -269,7 +269,11 @@ func visitModelNode(model interface{}, included *map[string]*Node,
 			case reflect.Uint64:
 				node.ID = strconv.FormatUint(v.Interface().(uint64), 10)
 			case reflect.Array:
-				node.ID = v.Interface().(uuid.UUID).String()
+				if v.Type().PkgPath() == "github.com/gofrs/uuid" && v.Type().Name() == "UUID" {
+					node.ID = v.Interface().(uuid.UUID).String()
+				} else {
+					er = ErrBadJSONAPIID
+				}
 			default:
 				// We had a JSON float (numeric), but our field was not one of the
 				// allowed numeric types
